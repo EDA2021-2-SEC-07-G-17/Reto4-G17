@@ -37,7 +37,11 @@ operación solicitada
 def printMenu():
     print("Bienvenido")
     print("1- Cargar información en el catálogo")
-    print("2- ")
+    print("2- Consultar los puntos de Interconexión entre los Aeropuertos")
+    print("3- Consultar la cantidad de clústeres entre dos aeropuertos")
+    print("4- Consultar la ruta más corta entre dos ciudades")
+    print("5- Consultar la mayor cantidad de ciudades que pueden visitarse con Millas de Viajero")
+    print("6- Consultar el impacto causado por un aeropuerto cerrado")
 
 catalog = None
 
@@ -51,8 +55,21 @@ while True:
         print("Cargando información de los archivos ....")
 
     elif int(inputs[0]) == 2:
-        pass
+        print("Requerimiento 1")
+
+    elif int(inputs[0]) == 3:
+        print("Requerimiento 2")
+
+    elif int(inputs[0]) == 4:
+        print("Requerimiento 3")
+
+    elif int(inputs[0]) == 5:
+        print("Requerimiento 4")
+
+    elif int(inputs[0]) == 6:
+        print("Requerimiento 5")
 
     else:
+        print("Cerrando el programa . . . .")
         sys.exit(0)
 sys.exit(0)
