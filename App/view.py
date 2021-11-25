@@ -23,6 +23,7 @@
 import config as cf
 import sys
 import controller
+from DISClib.ADT import graph as gr
 from DISClib.ADT import list as lt
 assert cf
 
@@ -44,6 +45,8 @@ def printMenu():
     print("6- Consultar el impacto causado por un aeropuerto cerrado")
 
 catalog = None
+airpfile = 'airports_full.csv'
+routefile = 'routes_full.csv'
 
 """
 Menu principal
@@ -52,7 +55,13 @@ while True:
     printMenu()
     inputs = input('Seleccione una opción para continuar\n')
     if int(inputs[0]) == 1:
-        print("Cargando información de los archivos ....")
+        print("\nInicializando el analizador ....")
+        catalog = controller.init()
+        print("\nCargando información de los archivos ....")
+        controller.loadINFO(catalog, airpfile, routefile)
+
+        print("Cantidad de Aeropuertos Dirigidos: " + str(gr.numVertices(catalog['grafo_dirigido'])))
+        print("Cantidad de Aeropuertos No Dirigidos: " + str(gr.numVertices(catalog['grafo_nodirigido'])))
 
     elif int(inputs[0]) == 2:
         print("Requerimiento 1")

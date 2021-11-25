@@ -29,9 +29,40 @@ import csv
 El controlador se encarga de mediar entre la vista y el modelo.
 """
 
-# Inicialización del Catálogo de libros
+# Inicialización del Catalogo
+def init():
+    """
+    Llama la funcion de inicializacion  del modelo.
+    """
+    # analyzer es utilizado para interactuar con el modelo
+    analyzer = model.new_analyzer()
+    return analyzer
 
 # Funciones para la carga de datos
+def loadINFO(analyzer, airpfile, routefile):
+    loadairports(analyzer, airpfile)
+    loadconections(analyzer, routefile)
+
+
+def loadairports(analyzer, airpfile):
+    "Carga la información de los aeropuertos"
+    servicesfile = cf.data_dir + airpfile
+    input_file = csv.DictReader(open(servicesfile, encoding="utf-8"),
+                                delimiter=",")
+    for airport in input_file:
+        model.add_aeropuerto(analyzer, airport)
+    return analyzer
+
+
+def loadconections(analyzer, routfile):
+    "Carga la información de los vuelos"
+    servicesfile = cf.data_dir + routfile
+    input_file = csv.DictReader(open(servicesfile, encoding="utf-8"),
+                                delimiter=",")
+    for vuelo in input_file:
+        model.add_conexiones(analyzer, vuelo)
+    model.add_total(analyzer)
+    return analyzer
 
 # Funciones de ordenamiento
 
