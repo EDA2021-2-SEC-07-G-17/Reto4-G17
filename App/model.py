@@ -58,7 +58,7 @@ def new_analyzer():
 
 # Funciones para agregar informacion al catalogo
 
-def add_total(analyzer, airport, ruta):
+def add_total(analyzer):
     add_vertices(analyzer)
     add_arcos(analyzer)
 
