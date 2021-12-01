@@ -59,9 +59,12 @@ def loadconections(analyzer, routfile):
     servicesfile = cf.data_dir + routfile
     input_file = csv.DictReader(open(servicesfile, encoding="utf-8"),
                                 delimiter=",")
+    n = 0
     for vuelo in input_file:
-        model.add_conexiones(analyzer, vuelo)
-    model.add_total(analyzer)
+        model.add_arcos(analyzer, vuelo)
+        n += 1
+        print(n)
+
     return analyzer
 
 # Funciones de ordenamiento
