@@ -44,18 +44,26 @@ def new_analyzer():
     analyzer = {
         "aeropuertos":None,
         "grafo_dirigido":None,
-        "grafo_nodirigido":None
+        "rutas_dirigido":None,
+        "grafo_nodirigido":None,
+        "rutas_nodirigido":None,
+        "ciudades":None
     }
 
     analyzer["aeropuertos"] = mp.newMap(numelements=41011, maptype="CHAINING")
     analyzer["grafo_dirigido"] = gr.newGraph(datastructure="ADJ_LIST",directed=True, size=92623)
+    analyzer["rutas_dirigido"] = mp.newMap(numelements=41011, maptype="CHAINING")
     analyzer["grafo_nodirigido"] = gr.newGraph(datastructure="ADJ_LIST",directed=False, size=92623)
+    analyzer["rutas_nodirigido"] = mp.newMap(numelements=41011, maptype="CHAINING")
+    analyzer["ciudades"] = mp.newMap(numelements=41011, maptype="CHAINING")
 
     return analyzer
     
 
 # Funciones para agregar informacion al catalogo
 
+def add_resto(analyzer):
+    add_vertices(analyzer)
 
 def add_aeropuerto(analyzer, airport):
     nombre_iata = airport["IATA"]
@@ -72,15 +80,19 @@ def add_vertices(analyzer):
     return analyzer
 
 def add_arcos(analyzer, ruta):
-    
-    add_vertices(analyzer)
 
     dirigido = analyzer["grafo_dirigido"]
     nodirigido = analyzer["grafo_nodirigido"]
 
+    rutas_dirigido = analyzer["rutas_dirigido"]
+    rutas_nodirigido = analyzer["rutas_nodirigido"]
+
     origen = ruta["Departure"]
     destino = ruta["Destination"]
     peso = ruta["distance_km"]
+    aerolinea = ruta["Airline"]
+
+    nruta = str(aerolinea)+"-"+str(origen)+"-"+str(destino)
 
     reverso = gr.getEdge(dirigido, destino, origen)
 
@@ -89,10 +101,31 @@ def add_arcos(analyzer, ruta):
         gr.insertVertex(nodirigido, origen)
         gr.insertVertex(nodirigido, destino)
         gr.addEdge(nodirigido, origen, destino, peso)
+
+        mp.put(rutas_nodirigido, nruta, ruta)
     else:
         gr.addEdge(dirigido, origen, destino, peso)
+        mp.put(rutas_dirigido, nruta, ruta)
     
     return analyzer
+
+def add_ciudades(analyzer, ciu):
+    ciudades = analyzer["ciudades"]
+    name = ciu["city_ascii"]
+
+    existencia = mp.contains(ciudades, name)
+
+    if existencia == True:
+        lista = mp.get(ciudades, name)["value"]
+        lt.addLast(lista, ciu)
+        mp.put(ciudades, name, lista)
+    else:
+        lista = lt.newList(datastructure="SINGLE_LINKED")
+        lt.addLast(lista, ciu)
+        mp.put(ciudades, name, lista)
+    
+    return analyzer
+
 
 # Funciones para creacion de datos
 

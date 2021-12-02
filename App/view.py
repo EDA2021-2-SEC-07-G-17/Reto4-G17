@@ -24,6 +24,7 @@ import config as cf
 import sys
 import controller
 from DISClib.ADT import graph as gr
+from DISClib.ADT import map as mp
 from DISClib.ADT import list as lt
 assert cf
 
@@ -45,8 +46,9 @@ def printMenu():
     print("6- Consultar el impacto causado por un aeropuerto cerrado")
 
 catalog = None
-airpfile = 'airports_full.csv'
-routefile = 'routes_full.csv'
+airpfile = "airports_full.csv"
+routefile = "routes_full.csv"
+citiesfile = "worldcities.csv"
 
 """
 Menu principal
@@ -58,10 +60,15 @@ while True:
         print("\nInicializando el analizador ....")
         catalog = controller.init()
         print("\nCargando información de los archivos ....")
-        controller.loadINFO(catalog, airpfile, routefile)
+        controller.loadINFO(catalog, airpfile, routefile, citiesfile)
 
         print("Cantidad de Aeropuertos Dirigidos: " + str(gr.numVertices(catalog['grafo_dirigido'])))
+        print("Cantidad de Vuelos Dirigidos: " + str(mp.size(catalog["rutas_dirigido"])))
+        print("---------------------------------------------------------------------------")
         print("Cantidad de Aeropuertos No Dirigidos: " + str(gr.numVertices(catalog['grafo_nodirigido'])))
+        print("Cantidad de Vuelos Dirigidos: " + str(mp.size(catalog["rutas_nodirigido"])))
+        print("---------------------------------------------------------------------------")
+        print("EL numero de ciudades no repetidas es: "+str(mp.size(catalog["ciudades"])))
 
     elif int(inputs[0]) == 2:
         print("Requerimiento 1")

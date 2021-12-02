@@ -39,9 +39,10 @@ def init():
     return analyzer
 
 # Funciones para la carga de datos
-def loadINFO(analyzer, airpfile, routefile):
+def loadINFO(analyzer, airpfile, routefile, citiesfile):
     loadairports(analyzer, airpfile)
     loadconections(analyzer, routefile)
+    loadcities(analyzer, citiesfile)
 
 
 def loadairports(analyzer, airpfile):
@@ -51,6 +52,7 @@ def loadairports(analyzer, airpfile):
                                 delimiter=",")
     for airport in input_file:
         model.add_aeropuerto(analyzer, airport)
+    model.add_resto(analyzer)
     return analyzer
 
 
@@ -65,6 +67,15 @@ def loadconections(analyzer, routfile):
         n += 1
         print(n)
 
+    return analyzer
+
+def loadcities(analyzer, citiesfile):
+    "Carga la información de las ciudades"
+    servicesfile = cf.data_dir + citiesfile
+    input_file = csv.DictReader(open(servicesfile, encoding="utf-8"),
+                                delimiter=",")
+    for city in input_file:
+        model.add_ciudades(analyzer, city)
     return analyzer
 
 # Funciones de ordenamiento
