@@ -65,10 +65,12 @@ def new_analyzer():
 
 def add_aeropuerto(analyzer, airport):
     nombre_iata = airport["IATA"]
+    aeropuertos = analyzer["aeropuertos"]
     dirigido = analyzer["grafo_dirigido"]
     nodirigido = analyzer["grafo_nodirigido"]
     gr.insertVertex(dirigido, nombre_iata)
     gr.insertVertex(nodirigido, nombre_iata)
+    mp.put(aeropuertos, nombre_iata, airport)
     return analyzer
 
 def add_arcos(analyzer, ruta):
