@@ -73,9 +73,11 @@ def add_aeropuerto(analyzer, airport):
 def add_vertices(analyzer):
     aeropuertos = mp.keySet(analyzer["aeropuertos"])
     dirigido = analyzer["grafo_dirigido"]
-    
+    nodirigido = analyzer["grafo_nodirigido"]
+
     for ae in lt.iterator(aeropuertos):
         gr.insertVertex(dirigido, ae)
+        gr.insertVertex(nodirigido, ae)
     
     return analyzer
 
@@ -103,6 +105,7 @@ def add_arcos(analyzer, ruta):
         gr.addEdge(nodirigido, origen, destino, peso)
 
         mp.put(rutas_nodirigido, nruta, ruta)
+        mp.put(rutas_dirigido, nruta, ruta)
     else:
         gr.addEdge(dirigido, origen, destino, peso)
         mp.put(rutas_dirigido, nruta, ruta)

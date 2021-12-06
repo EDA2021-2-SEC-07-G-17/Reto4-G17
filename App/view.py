@@ -46,8 +46,8 @@ def printMenu():
     print("6- Consultar el impacto causado por un aeropuerto cerrado")
 
 catalog = None
-airpfile = "airports_full.csv"
-routefile = "routes_full.csv"
+airpfile = "airports-utf8-small.csv"
+routefile = "routes-utf8-small.csv"
 citiesfile = "worldcities.csv"
 
 """
@@ -63,10 +63,10 @@ while True:
         controller.loadINFO(catalog, airpfile, routefile, citiesfile)
 
         print("Cantidad de Aeropuertos Dirigidos: " + str(gr.numVertices(catalog['grafo_dirigido'])))
-        print("Cantidad de Vuelos Dirigidos: " + str(mp.size(catalog["rutas_dirigido"])))
+        print("Cantidad de Vuelos Dirigidos: " + str(gr.numEdges(catalog['grafo_dirigido'])))
         print("---------------------------------------------------------------------------")
         print("Cantidad de Aeropuertos No Dirigidos: " + str(gr.numVertices(catalog['grafo_nodirigido'])))
-        print("Cantidad de Vuelos Dirigidos: " + str(mp.size(catalog["rutas_nodirigido"])))
+        print("Cantidad de Vuelos No Dirigidos: " + str(gr.numEdges(catalog['grafo_nodirigido'])))
         print("---------------------------------------------------------------------------")
         print("EL numero de ciudades no repetidas es: "+str(mp.size(catalog["ciudades"])))
 
