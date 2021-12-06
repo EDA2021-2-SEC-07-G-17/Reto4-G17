@@ -52,7 +52,6 @@ def loadairports(analyzer, airpfile):
                                 delimiter=",")
     for airport in input_file:
         model.add_aeropuerto(analyzer, airport)
-    model.add_resto(analyzer)
     return analyzer
 
 

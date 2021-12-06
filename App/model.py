@@ -62,23 +62,13 @@ def new_analyzer():
 
 # Funciones para agregar informacion al catalogo
 
-def add_resto(analyzer):
-    add_vertices(analyzer)
 
 def add_aeropuerto(analyzer, airport):
     nombre_iata = airport["IATA"]
-    mp.put(analyzer["aeropuertos"], nombre_iata, airport)
-    return analyzer
-
-def add_vertices(analyzer):
-    aeropuertos = mp.keySet(analyzer["aeropuertos"])
     dirigido = analyzer["grafo_dirigido"]
     nodirigido = analyzer["grafo_nodirigido"]
-
-    for ae in lt.iterator(aeropuertos):
-        gr.insertVertex(dirigido, ae)
-        gr.insertVertex(nodirigido, ae)
-    
+    gr.insertVertex(dirigido, nombre_iata)
+    gr.insertVertex(nodirigido, nombre_iata)
     return analyzer
 
 def add_arcos(analyzer, ruta):
