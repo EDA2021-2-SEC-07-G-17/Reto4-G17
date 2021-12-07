@@ -77,3 +77,11 @@ def loadcities(analyzer, citiesfile):
 # Funciones de ordenamiento
 
 # Funciones de consulta sobre el catálogo
+
+def mas_conexiones(analyzer):
+    lista = model.mas_conexiones(analyzer)
+    return lista
+
+def clusteres_trafico(analyzer, iata1, iata2):
+    total, conexion = model.clusteres_trafico(analyzer, iata1, iata2)
+    return total, conexion

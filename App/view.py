@@ -61,20 +61,79 @@ while True:
         catalog = controller.init()
         print("\nCargando información de los archivos ....")
         controller.loadINFO(catalog, airpfile, routefile, citiesfile)
+        
+        aeropuertos = catalog["aeropuertos"]
 
+        print("---------------------------------------------------------------------------")
         print("Cantidad de Aeropuertos Dirigidos: " + str(gr.numVertices(catalog['grafo_dirigido'])))
         print("Cantidad de Vuelos Dirigidos: " + str(gr.numEdges(catalog['grafo_dirigido'])))
+
+        dirigidos = catalog["grafo_dirigido"]
+        lista_dirigidos = gr.vertices(dirigidos)
+
+        primero = lt.firstElement(lista_dirigidos)
+        ultimo = lt.lastElement(lista_dirigidos)
+
+        prim = mp.get(aeropuertos, primero)['value']
+        ult = mp.get(aeropuertos, ultimo)['value']
+
+        print("\nPrimer aeropuerto cargado: ")
+        print("IATA: " + prim["IATA"] + "\nName: " + prim["Name"] + "\nciudad: " + prim["City"] + "\nPais: " + prim["Country"] + "\nLatitud: " + str(prim["Latitude"]) + "\nLongitud: " + str(prim["Longitude"]))
+        print("\nUltimo aeropuerto cargado: ")
+        print("IATA: " + ult["IATA"] + "\nName: " + ult["Name"] + "\nciudad: " + ult["City"] + "\nPais: " + ult["Country"] + "\nLatitud: " + str(ult["Latitude"]) + "\nLongitud: " + str(ult["Longitude"]))
+
         print("---------------------------------------------------------------------------")
         print("Cantidad de Aeropuertos No Dirigidos: " + str(gr.numVertices(catalog['grafo_nodirigido'])))
         print("Cantidad de Vuelos No Dirigidos: " + str(gr.numEdges(catalog['grafo_nodirigido'])))
+        
+        nodirigidos = catalog["grafo_nodirigido"]
+        lista_nodirigidos = gr.vertices(nodirigidos)
+
+        primero_n = lt.firstElement(lista_nodirigidos)
+        ultimo_n = lt.lastElement(lista_nodirigidos)
+
+        prim_n = mp.get(aeropuertos, primero_n)['value']
+        ult_n = mp.get(aeropuertos, ultimo_n)['value']
+
+        print("\nPrimer aeropuerto cargado: ")
+        print("IATA: " + prim_n["IATA"] + "\nName: " + prim_n["Name"] + "\nciudad: " + prim_n["City"] + "\nPais: " + prim_n["Country"] + "\nLatitud: " + str(prim_n["Latitude"]) + "\nLongitud: " + str(prim_n["Longitude"]))
+        print("\nUltimo aeropuerto cargado: ")
+        print("IATA: " + ult_n["IATA"] + "\nName: " + ult_n["Name"] + "\nciudad: " + ult_n["City"] + "\nPais: " + ult_n["Country"] + "\nLatitud: " + str(ult_n["Latitude"]) + "\nLongitud: " + str(ult_n["Longitude"]))
+
         print("---------------------------------------------------------------------------")
-        print("EL numero de ciudades no repetidas es: "+str(mp.size(catalog["ciudades"])))
+        print("El numero de ciudades es: "+str(mp.get(catalog['ciudades'],"cantidad")['value'] ))
+        print("El numero de ciudades no repetidas es: "+str(mp.size(catalog['ciudades'])))
+        print("---------------------------------------------------------------------------")
 
     elif int(inputs[0]) == 2:
-        print("Requerimiento 1")
+        lista = controller.mas_conexiones(catalog)
+        i = lt.size(lista)
+        j = 1
+
+        while j <= 5:
+            iata = lt.getElement(lista, i)
+            print("-------------------------------------------------------")
+            print("\nIATA: " + iata["IATA"] + "\nName: " + iata["Name"] + "\nciudad: " + iata["City"] + "\nPais: " + iata["Country"] 
+            + "\nConexiones: " + str(iata["total"]) + "\nEntrada: " + str(iata["entrada"]) + "\nSalida: " + str(iata["salida"]))
+            print("")
+
+            i -= 1
+            j += 1
 
     elif int(inputs[0]) == 3:
-        print("Requerimiento 2")
+        print("\n----------------------Inputs----------------------")
+        iata1 = input("\nEscriba el codigo IATA del aeropuerto 1: ")
+        iata2 = input("Escriba el codigo IATA del aeropuerto 2: ")
+        print("\n----------------------Outputs----------------------")
+        total, conexion = controller.clusteres_trafico(catalog, iata1, iata2)
+        print("El numerode Componentes Fuertemnte conectados es: " + str(total))
+        if conexion == True:
+            print("Los areropuertos están fuertemente conctados")
+            print("")
+        else:
+            print("Los areropuertos NO están fuertemente conctados")
+            print("")
+
 
     elif int(inputs[0]) == 4:
         print("Requerimiento 3")

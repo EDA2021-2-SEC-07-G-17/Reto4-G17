@@ -30,7 +30,8 @@ from DISClib.ADT import list as lt
 from DISClib.ADT import map as mp
 from DISClib.ADT import graph as gr
 from DISClib.DataStructures import mapentry as me
-from DISClib.Algorithms.Sorting import shellsort as sa
+from DISClib.Algorithms.Sorting import mergesort as mg
+from DISClib.Algorithms.Graphs import scc as scc
 assert cf
 
 """
@@ -57,6 +58,9 @@ def new_analyzer():
     analyzer["rutas_nodirigido"] = mp.newMap(numelements=41011, maptype="CHAINING")
     analyzer["ciudades"] = mp.newMap(numelements=41011, maptype="CHAINING")
 
+    numero = 0
+    mp.put(analyzer["ciudades"],"cantidad",numero)
+    
     return analyzer
     
 
@@ -92,8 +96,6 @@ def add_arcos(analyzer, ruta):
 
     if reverso != None:
         gr.addEdge(dirigido, origen, destino, peso)
-        gr.insertVertex(nodirigido, origen)
-        gr.insertVertex(nodirigido, destino)
         gr.addEdge(nodirigido, origen, destino, peso)
 
         mp.put(rutas_nodirigido, nruta, ruta)
@@ -109,6 +111,8 @@ def add_ciudades(analyzer, ciu):
     name = ciu["city_ascii"]
 
     existencia = mp.contains(ciudades, name)
+    numero = mp.get(ciudades, "cantidad")['value']
+    mp.put(ciudades, "cantidad", int(numero)+1)
 
     if existencia == True:
         lista = mp.get(ciudades, name)["value"]
@@ -121,6 +125,38 @@ def add_ciudades(analyzer, ciu):
     
     return analyzer
 
+
+def agregar_conexiones(analyzer):
+    aeropuertos = analyzer["aeropuertos"]
+    grafo = analyzer["grafo_dirigido"]
+    lista = mp.valueSet(aeropuertos)
+
+    for ae in lt.iterator(lista):
+        iata = ae["IATA"]
+        salida = gr.outdegree(grafo, iata)
+        entrada = gr.indegree(grafo, iata)
+        total = salida + entrada
+        ae["total"] = total
+        ae["entrada"] = entrada
+        ae["salida"] = salida
+
+        mp.put(aeropuertos, iata, ae)
+
+    return aeropuertos
+
+def mas_conexiones(analyzer):
+    agregar_conexiones(analyzer)
+    lista = mp.valueSet(analyzer["aeropuertos"])
+    orderDegree(lista)
+    return lista
+
+def clusteres_trafico(analyzer, iata1, iata2):
+    grafo = analyzer["grafo_dirigido"]
+    estructura = scc.KosarajuSCC(grafo)
+    total = scc.connectedComponents(estructura)
+    conexion = scc.stronglyConnected(estructura, iata1, iata2)
+
+    return total, conexion
 
 # Funciones para creacion de datos
 
@@ -136,4 +172,12 @@ def compareIATAS(aero, keyvalueaero):
     else:
         return -1
 
+def compareDegree(aer1, aer2):
+    num1 = aer1["total"]
+    num2 = aer2["total"]
+    return num1 < num2
+
 # Funciones de ordenamiento
+def orderDegree(lst):
+    mg.sort(lst, compareDegree)
+    return lst
