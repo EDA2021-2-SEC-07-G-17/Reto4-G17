@@ -92,15 +92,16 @@ def add_arcos(analyzer, ruta):
 
     nruta = str(aerolinea)+"-"+str(origen)+"-"+str(destino)
 
+    original = gr.getEdge(dirigido, origen, destino)
     reverso = gr.getEdge(dirigido, destino, origen)
 
-    if reverso != None:
+    if reverso != None and original == None:
         gr.addEdge(dirigido, origen, destino, peso)
         gr.addEdge(nodirigido, origen, destino, peso)
 
         mp.put(rutas_nodirigido, nruta, ruta)
         mp.put(rutas_dirigido, nruta, ruta)
-    else:
+    elif reverso == None and original == None:
         gr.addEdge(dirigido, origen, destino, peso)
         mp.put(rutas_dirigido, nruta, ruta)
     
@@ -157,6 +158,19 @@ def clusteres_trafico(analyzer, iata1, iata2):
     conexion = scc.stronglyConnected(estructura, iata1, iata2)
 
     return total, conexion
+
+def efecto_aeropuerto(analyzer, iata):
+    grafo = analyzer["grafo_dirigido"]
+    aeropuertos = analyzer["aeropuertos"]
+
+    adyacentes = gr.adjacents(grafo, iata)
+    lista = lt.newList(datastructure='SINGLE_LINKED')
+
+    for ae in lt.iterator(adyacentes):
+        ele = mp.get(aeropuertos, ae)['value']
+        lt.addLast(lista, ele)
+
+    return lista
 
 # Funciones para creacion de datos
 

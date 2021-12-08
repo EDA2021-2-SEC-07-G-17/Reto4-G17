@@ -142,7 +142,55 @@ while True:
         print("Requerimiento 4")
 
     elif int(inputs[0]) == 6:
-        print("Requerimiento 5")
+        print("\n----------------------Inputs----------------------")
+        iata = input("\nEscribe el codigo IATA del aeropuerto fuera de funcionamiento: ")
+        print("\n----------------------Outputs----------------------")
+        lista = controller.efecto_aeropuerto(catalog, iata)
+        tamano = lt.size(lista)
+        print("\n Hay "+str(tamano)+" aeropuertos afectados por el cierre del aeropuerto " + str(iata))
+        lst = lt.newList("ARRAY_LIST")
+        
+        if int(tamano) >= 6:
+            i = 1
+            print("Los primeros 3 aeropuertos afectados son: ")
+            while i <= 3:
+                aer = lt.getElement(lista, i)
+                print("\nIATA: " + aer["IATA"] + "\nNombre: " + aer["Name"] + "\nCiudad: " + aer["City"] 
+                    + "\nPaís: " + aer["Country"])
+                
+                ultimo = lt.lastElement(lista)
+                lt.removeLast(lista)
+                lt.addFirst(lst, ultimo)
+                i+=1
+            print("\n")
+            print("Los ultimos 3 aeropuertos afectados son: ")
+            for h in lt.iterator(lst):
+                print("\nIATA: " + h["IATA"] + "\nNombre: " + h["Name"] + "\nCiudad: " + h["City"] 
+                    + "\nPaís: " + h["Country"])
+            
+        elif int(tamano) == 1:
+            aer = lt.getElement(lista,1)
+            print("\nIATA: " + aer["IATA"] + "\nNombre: " + aer["Name"] + "\nCiudad: " + aer["City"] 
+                    + "\nPaís: " + aer["Country"])
+        
+        elif int(tamano) < 10 and int(tamano) != 1:
+            j=1
+            mitad = int(tamano/2)
+            print("Los primeros "+ str(mitad) +" aeropuertos afectados son: ")  
+            while j <= mitad:
+                aer = lt.getElement(lista, j)
+                print("\nIATA: " + aer["IATA"] + "\nNombre: " + aer["Name"] + "\nCiudad: " + aer["City"] 
+                    + "\nPaís: " + aer["Country"])
+                ultimo = lt.lastElement(lista)
+                lt.removeLast(lista)
+                lt.addFirst(lst, ultimo)
+                j+=1
+
+            print("\n")
+            print("Los ultimos "+ str(mitad) +" aeropuertos afectados son: ")
+            for n in lt.iterator(lst):
+                print("\nIATA: " + n["IATA"] + "\nNombre: " + n["Name"] + "\nCiudad: " + n["City"] 
+                    + "\nPaís: " + n["Country"])
 
     else:
         print("Cerrando el programa . . . .")

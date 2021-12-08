@@ -85,3 +85,7 @@ def mas_conexiones(analyzer):
 def clusteres_trafico(analyzer, iata1, iata2):
     total, conexion = model.clusteres_trafico(analyzer, iata1, iata2)
     return total, conexion
+
+def efecto_aeropuerto(analyzer, iata):
+    lista = model.efecto_aeropuerto(analyzer, iata)
+    return lista
