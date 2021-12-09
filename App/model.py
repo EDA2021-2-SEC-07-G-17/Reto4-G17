@@ -37,7 +37,9 @@ from DISClib.DataStructures import mapentry as me
 from DISClib.ADT import orderedmap as om
 from DISClib.Algorithms.Sorting import mergesort as mg
 from DISClib.Algorithms.Graphs import scc as scc
-from DISClib.Algorithms.Graphs import dijsktra as dij
+from DISClib.Algorithms.Graphs import dijsktra as dj
+from DISClib.Algorithms.Graphs import prim as pr
+import ast
 assert cf
 
 """
@@ -192,22 +194,15 @@ def clusteres_trafico(analyzer, iata1, iata2):
 def millas(nummillas, analyzer):
     aero=analyzer["aeropuertos"]
     grafo=analyzer["grafo_dirigido"]
-    arbol=dij.Dijkstra(grafo,"KTF")
+    arbol=pr.PrimMST(grafo)
     cont=0
     cont2=0
     costo=0
     mayor=sk.newStack()
     for i in lt.iterator(mp.keySet(aero)):
-        print(i)
-        if dij.hasPathTo(arbol,i):
-            print(100)
-            path=dij.pathTo(arbol,i)
-            contador=0
-            while not sk.isEmpty(path):
-                edge=sk.pop(path)
-                print(edge["vertexA"]+" : "+edge["weight"])
-                contador+=float(edge["weight"])
-                cont+=1
+        if pr.scan(grafo,arbol,i)<100000000:
+            print(i)
+            costo=pr.scan(grafo,arbol,i)
             if sk.size(mayor)< sk.size(path):
                 mayor=path
                 costo=contador
