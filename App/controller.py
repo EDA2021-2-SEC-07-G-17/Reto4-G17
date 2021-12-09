@@ -93,3 +93,15 @@ def millas(nummillas, analyzer):
 def efecto_aeropuerto(analyzer, iata):
     lista = model.efecto_aeropuerto(analyzer, iata)
     return lista
+
+def encontrar_aeropuerto(analyzer, ciu):
+    aeropuerto = model.encontrar_aeropuerto(analyzer,ciu)
+    return aeropuerto
+
+def escoger_ciudad(analyzer, name):
+    ciudad = model.escoger_ciudad(analyzer, name)
+    return ciudad
+
+def camino_minimo(analyzer, iata1, iata2):
+    distancia, pila = model.camino_minimo(analyzer, iata1, iata2)
+    return distancia, pila

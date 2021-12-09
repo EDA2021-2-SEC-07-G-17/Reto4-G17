@@ -26,13 +26,15 @@
 
 
 import config as cf
-import math
+import math as ma
+from haversine import haversine
 from DISClib.ADT import list as lt
 from DISClib.ADT import map as mp
 from DISClib.ADT import graph as gr
 from DISClib.ADT import stack as sk
 from DISClib.ADT import orderedmap as omp
 from DISClib.DataStructures import mapentry as me
+from DISClib.ADT import orderedmap as om
 from DISClib.Algorithms.Sorting import mergesort as mg
 from DISClib.Algorithms.Graphs import scc as scc
 from DISClib.Algorithms.Graphs import dijsktra as dj
@@ -93,7 +95,7 @@ def add_arcos(analyzer, ruta):
 
     origen = ruta["Departure"]
     destino = ruta["Destination"]
-    peso = ruta["distance_km"]
+    peso = calcular_peso(analyzer, origen, destino)
     aerolinea = ruta["Airline"]
 
     nruta = str(aerolinea)+"-"+str(origen)+"-"+str(destino)
@@ -112,6 +114,20 @@ def add_arcos(analyzer, ruta):
         mp.put(rutas_dirigido, nruta, ruta)
     
     return analyzer
+
+def calcular_peso(analyzer, origen, destino):
+    aeropuertos = analyzer["aeropuertos"]
+    ciu1 = mp.get(aeropuertos, origen)['value']
+    ciu2 = mp.get(aeropuertos, destino)['value']
+
+    lat1 = float(ciu1["Latitude"])
+    lng1 = float(ciu1["Longitude"])
+    lat2 = float(ciu2["Latitude"])
+    lng2 = float(ciu2["Longitude"])
+
+    valor = formula_haversine(lat1, lat2, lng1, lng2)
+
+    return valor
 
 def add_ciudades(analyzer, ciu):
     ciudades = analyzer["ciudades"]
@@ -132,6 +148,16 @@ def add_ciudades(analyzer, ciu):
     
     return analyzer
 
+
+# Funciones para creacion de datos
+
+def formula_haversine(lat1, lat2, lng1, lng2):
+    punto1 = (lat1, lng1)
+    punto2 = (lat2, lng2)
+    valor = haversine(punto1, punto2)
+    return valor
+
+# Funciones de consulta
 
 def agregar_conexiones(analyzer):
     aeropuertos = analyzer["aeropuertos"]
@@ -164,70 +190,7 @@ def clusteres_trafico(analyzer, iata1, iata2):
     conexion = scc.stronglyConnected(estructura, iata1, iata2)
 
     return total, conexion
-def camino_entre_ciudades(analyzer, c1,c2):
-    grafo = analyzer["grafo_dirigido"]
-    ciudades=analyzer["ciudades"]
-    name = c1
-    c1=mp.get(ciudades,c1)
-    lista = c1["value"]
-    if lt.size(lista)>1:
-        c1=input("ingrese las cordenadas de la ciudad "+name+" en formato latitud,longitud: ")
-        c1=c1.split(",")
-        for j in lt.iterator(lista):
-            if c1[0]==j["lat"] and c1[1]==j["lng"]:
-                ciudad1=j
-    else:
-        ciudad1=lt.getElement(lista,1)    
-    name=c2        
-    c2=mp.get(ciudades,c2)
-    lista2 = c2["value"]
-    if lt.size(lista2)>1:
-        c2=input("ingrese las cordenadas de la ciudad "+name+" en formato latitud,longitud: ")
-        c2=c2.split(",")
-        for j in lt.iterator(lista):
-            if c2[0]==j["lat"] and c2[1]==j["lng"]:
-                ciudad2=j
-    else:
-        ciudad2=lt.getElement(lista,1) 
-    encontro =False
-    conta=10
-    cont=0
-    cont2=0
-    lis=encontrar_aero(analyzer,ciudad1,conta)
-    lis2=encontrar_aero(analyzer,ciudad2,conta)
-    while encontro==False:    
-        if lt.size(lis)==0:
-            lis=encontrar_aero(analyzer,ciudad1,conta+10)
-        else:
-            cont=1
-            lis=mg.sort(lis,comparedis)
-        if lt.size(lis2)==0:
-            lis2=encontrar_aero(analyzer,ciudad2,conta+10)
-        else:
-            cont2=1  
-            lis2=mg.sort(lis2,comparedis)  
-        if cont+cont2==2:
-            encontro=True
-        conta+=10
-    print(lis,lis2)
 
-def encontrar_aero(analyzer,c,num):
-    aeropuertos=analyzer["aeropuertos"]  
-    lis= lt.newList(datastructure="SINGLE_LINKED")   
-    y=c["lat"]   
-    z=c["lng"]    
-    for i in lt.iterator (mp.valueSet(aeropuertos)):
-        x=i["Latitude"]
-        b=i["Longitude"]
-        print (x,y)
-        d_latt = ast.literal_eval(x)-ast.literal_eval(y)
-        d_long = ast.literal_eval(b)-ast.literal_eval(z)
-        a = math.sin (d_latt/2) ** 2 + math.cos (ast.literal_eval(y)) * math.cos (ast.literal_eval(x)) * math.sin (d_long / 2) ** 2
-        c = 2 * math.asin(math.sqrt (a))
-        total =6371*c
-        if total<num:
-           lt.addLast(lis,{"aero":i["IATA"],"total":total})
-    return lis  
 def millas(nummillas, analyzer):
     aero=analyzer["aeropuertos"]
     grafo=analyzer["grafo_dirigido"]
@@ -265,9 +228,48 @@ def efecto_aeropuerto(analyzer, iata):
 
     return lista
 
-# Funciones para creacion de datos
+def escoger_ciudad(analyzer, name):
+    ciudadades = analyzer["ciudades"]
+    lista = mp.get(ciudadades, name)["value"]
+    tamano = lt.size(lista)
 
-# Funciones de consulta
+    if tamano > 1:
+        n = 1
+        for e in lt.iterator(lista):
+            print("Opción " + str(n) +": " + e["city"] + " - "+ e["country"] + " - Latitud: " + str(e["lat"]) + " - Longitud:" + str(e["lng"]))
+            n += 1
+        eleccion = input("Escribe el numero de la opcion: ")
+        aer = lt.getElement(lista, int(eleccion))
+        return aer
+    else:
+        aer = lt.firstElement(lista)
+        return aer
+
+def encontrar_aeropuerto(analyzer, ciu):
+    aeropuertos = analyzer["aeropuertos"]
+    lista = mp.valueSet(aeropuertos)
+
+    lat = float(ciu["lat"])
+    lng = float(ciu["lng"])
+
+    mapa = om.newMap(omaptype="RBT")
+
+    for ae in lt.iterator(lista):
+        latitud = round(float(ae["Latitude"]),2)
+        longitud = round(float(ae["Longitude"]),2)
+        distancia = formula_haversine(lat, latitud, lng, longitud)
+        om.put(mapa, distancia, ae)
+    
+    cercano = om.minKey(mapa)
+    resultado = om.get(mapa, cercano)['value']
+    return resultado
+
+def camino_minimo(analyzer, iata1, iata2):
+    grafo = analyzer["grafo_dirigido"]
+    dijsktra = dij.Dijkstra(grafo, iata1)
+    distancia = dij.distTo(dijsktra, iata2)
+    pila = dij.pathTo(dijsktra, iata2)
+    return distancia, pila
 
 # Funciones utilizadas para comparar elementos dentro de una lista
 def compareIATAS(aero, keyvalueaero):

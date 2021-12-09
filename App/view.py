@@ -39,11 +39,11 @@ operación solicitada
 def printMenu():
     print("Bienvenido")
     print("1- Cargar información en el catálogo")
-    print("2- Consultar los puntos de Interconexión entre los Aeropuertos")
-    print("3- Consultar la cantidad de clústeres entre dos aeropuertos")
-    print("4- Consultar la ruta más corta entre dos ciudades")
-    print("5- Consultar la mayor cantidad de ciudades que pueden visitarse con Millas de Viajero")
-    print("6- Consultar el impacto causado por un aeropuerto cerrado")
+    print("2- Consultar los puntos de Interconexión entre los Aeropuertos->Req 1")
+    print("3- Consultar la cantidad de clústeres entre dos aeropuertos->Req 2")
+    print("4- Consultar la ruta más corta entre dos ciudades->Req 3")
+    print("5- Consultar la mayor cantidad de ciudades que pueden visitarse con Millas de Viajero->Req 4")
+    print("6- Consultar el impacto causado por un aeropuerto cerrado->Req 5")
 
 catalog = None
 airpfile = "airports-utf8-small.csv"
@@ -136,9 +136,33 @@ while True:
 
 
     elif int(inputs[0]) == 4:
-        x=input("ingrese la ciudad 1")
-        y=input("ingrese la ciudad 2")
-        controller.camino_entre_ciudades(catalog,x,y)
+        print("\n----------------------Inputs----------------------")
+        ciudad1 = input("\nEscriba el nombre de la ciudad de salida: ")
+        ciu1 = controller.escoger_ciudad(catalog, ciudad1)
+        aeropuerto1 = controller.encontrar_aeropuerto(catalog, ciu1)
+
+        ciudad2 = input("\nEscriba el nombre de la ciudad de llegada: ")
+        ciu2 = controller.escoger_ciudad(catalog, ciudad2)
+        aeropuerto2 = controller.encontrar_aeropuerto(catalog, ciu2)
+        print("\n----------------------Outputs----------------------")
+        print("\nEl aeropuerto de salida es: ")
+        print("\nIATA: " + aeropuerto1["IATA"] + "\nNombre: " + aeropuerto1["Name"] + "\nCiudad: " + aeropuerto1["City"] 
+                    + "\nPaís: " + aeropuerto1["Country"])
+        print("\nEl aeropuerto de llegada es: ")
+        print("\nIATA: " + aeropuerto2["IATA"] + "\nNombre: " + aeropuerto2["Name"] + "\nCiudad: " + aeropuerto2["City"] 
+                    + "\nPaís: " + aeropuerto2["Country"])
+        print("")
+
+        iata1 = aeropuerto1["IATA"]
+        iata2 = aeropuerto2["IATA"]
+
+        distancia, pila = controller.camino_minimo(catalog, iata1, iata2)
+
+        print("La distancia total es: " + str(round(distancia,2)) + " (km)")
+        
+        for ruta in lt.iterator(pila):
+            print("Salida: " + str(ruta["vertexA"]) + " - Llegada: " + str(ruta["vertexB"]) + " - Distancia: " + str(ruta["weight"]))
+        
 
     elif int(inputs[0]) == 5:
        y=input("ingrese su cantidad de millas")
