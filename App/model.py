@@ -26,12 +26,16 @@
 
 
 import config as cf
+import math as ma
+from haversine import haversine
 from DISClib.ADT import list as lt
 from DISClib.ADT import map as mp
 from DISClib.ADT import graph as gr
 from DISClib.DataStructures import mapentry as me
+from DISClib.ADT import orderedmap as om
 from DISClib.Algorithms.Sorting import mergesort as mg
 from DISClib.Algorithms.Graphs import scc as scc
+from DISClib.Algorithms.Graphs import dijsktra as dij
 assert cf
 
 """
@@ -87,7 +91,7 @@ def add_arcos(analyzer, ruta):
 
     origen = ruta["Departure"]
     destino = ruta["Destination"]
-    peso = ruta["distance_km"]
+    peso = calcular_peso(analyzer, origen, destino)
     aerolinea = ruta["Airline"]
 
     nruta = str(aerolinea)+"-"+str(origen)+"-"+str(destino)
@@ -106,6 +110,20 @@ def add_arcos(analyzer, ruta):
         mp.put(rutas_dirigido, nruta, ruta)
     
     return analyzer
+
+def calcular_peso(analyzer, origen, destino):
+    aeropuertos = analyzer["aeropuertos"]
+    ciu1 = mp.get(aeropuertos, origen)['value']
+    ciu2 = mp.get(aeropuertos, destino)['value']
+
+    lat1 = float(ciu1["Latitude"])
+    lng1 = float(ciu1["Longitude"])
+    lat2 = float(ciu2["Latitude"])
+    lng2 = float(ciu2["Longitude"])
+
+    valor = formula_haversine(lat1, lat2, lng1, lng2)
+
+    return valor
 
 def add_ciudades(analyzer, ciu):
     ciudades = analyzer["ciudades"]
@@ -126,6 +144,16 @@ def add_ciudades(analyzer, ciu):
     
     return analyzer
 
+
+# Funciones para creacion de datos
+
+def formula_haversine(lat1, lat2, lng1, lng2):
+    punto1 = (lat1, lng1)
+    punto2 = (lat2, lng2)
+    valor = haversine(punto1, punto2)
+    return valor
+
+# Funciones de consulta
 
 def agregar_conexiones(analyzer):
     aeropuertos = analyzer["aeropuertos"]
@@ -172,9 +200,48 @@ def efecto_aeropuerto(analyzer, iata):
 
     return lista
 
-# Funciones para creacion de datos
+def escoger_ciudad(analyzer, name):
+    ciudadades = analyzer["ciudades"]
+    lista = mp.get(ciudadades, name)["value"]
+    tamano = lt.size(lista)
 
-# Funciones de consulta
+    if tamano > 1:
+        n = 1
+        for e in lt.iterator(lista):
+            print("Opción " + str(n) +": " + e["city"] + " - "+ e["country"] + " - Latitud: " + str(e["lat"]) + " - Longitud:" + str(e["lng"]))
+            n += 1
+        eleccion = input("Escribe el numero de la opcion: ")
+        aer = lt.getElement(lista, int(eleccion))
+        return aer
+    else:
+        aer = lt.firstElement(lista)
+        return aer
+
+def encontrar_aeropuerto(analyzer, ciu):
+    aeropuertos = analyzer["aeropuertos"]
+    lista = mp.valueSet(aeropuertos)
+
+    lat = float(ciu["lat"])
+    lng = float(ciu["lng"])
+
+    mapa = om.newMap(omaptype="RBT")
+
+    for ae in lt.iterator(lista):
+        latitud = round(float(ae["Latitude"]),2)
+        longitud = round(float(ae["Longitude"]),2)
+        distancia = formula_haversine(lat, latitud, lng, longitud)
+        om.put(mapa, distancia, ae)
+    
+    cercano = om.minKey(mapa)
+    resultado = om.get(mapa, cercano)['value']
+    return resultado
+
+def camino_minimo(analyzer, iata1, iata2):
+    grafo = analyzer["grafo_dirigido"]
+    dijsktra = dij.Dijkstra(grafo, iata1)
+    distancia = dij.distTo(dijsktra, iata2)
+    pila = dij.pathTo(dijsktra, iata2)
+    return distancia, pila
 
 # Funciones utilizadas para comparar elementos dentro de una lista
 def compareIATAS(aero, keyvalueaero):
