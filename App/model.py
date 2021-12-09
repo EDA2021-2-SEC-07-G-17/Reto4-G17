@@ -207,6 +207,7 @@ def millas(nummillas, analyzer):
                 edge=sk.pop(t)
                 costo=edge["weight"]
                 print(edge["vertexB"]+" : "+costo)
+                cont+=1
             if sk.size(mayor)< sk.size(t):
                 mayor=t
                 co=costo
