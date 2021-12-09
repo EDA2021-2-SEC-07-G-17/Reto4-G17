@@ -23,9 +23,11 @@
 import config as cf
 import sys
 import controller
+import folium
 from DISClib.ADT import graph as gr
 from DISClib.ADT import map as mp
 from DISClib.ADT import list as lt
+import webbrowser
 assert cf
 
 
@@ -35,6 +37,24 @@ Presenta el menu de opciones y por cada seleccion
 se hace la solicitud al controlador para ejecutar la
 operación solicitada
 """
+
+def promedio_lat(lista):
+    suma = 0
+    numero = 0
+    for e in lista:
+        suma += float(e[0])
+        numero += 1
+    promedio = suma/numero
+    return promedio
+
+def promedio_lng(lista):
+    suma = 0
+    numero = 0
+    for e in lista:
+        suma += float(e[1])
+        numero += 1
+    promedio = suma/numero
+    return promedio
 
 def printMenu():
     print("Bienvenido")
@@ -109,9 +129,13 @@ while True:
         lista = controller.mas_conexiones(catalog)
         i = lt.size(lista)
         j = 1
-
+        coordenadas = []
         while j <= 5:
             iata = lt.getElement(lista, i)
+            lat = iata["Latitude"]
+            lng = iata["Longitude"]
+            coor = (lat, lng)
+            coordenadas.append(coor)
             print("-------------------------------------------------------")
             print("\nIATA: " + iata["IATA"] + "\nName: " + iata["Name"] + "\nciudad: " + iata["City"] + "\nPais: " + iata["Country"] 
             + "\nConexiones: " + str(iata["total"]) + "\nEntrada: " + str(iata["entrada"]) + "\nSalida: " + str(iata["salida"]))
@@ -119,6 +143,16 @@ while True:
 
             i -= 1
             j += 1
+
+        p_lat = promedio_lat(coordenadas)
+        p_lng = promedio_lng(coordenadas)
+        
+        mapa = folium.Map(location=[p_lat,p_lng], zoom_start=6)
+
+        for e in coordenadas:
+            folium.Marker(location= [ float(e[0]) , float(e[1]) ] ,icon=folium.Icon(color='red',icon='info-sign')).add_to(mapa) 
+        mapa.save("mapa1.html")
+        webbrowser.open("mapa1.html")
 
     elif int(inputs[0]) == 3:
         print("\n----------------------Inputs----------------------")
@@ -164,6 +198,21 @@ while True:
             print("Salida: " + str(ruta["vertexA"]) + " - Llegada: " + str(ruta["vertexB"]) + " - Distancia: " + str(ruta["weight"]))
         
 
+        punto1 = (aeropuerto1["Latitude"], aeropuerto1["Longitude"])
+        punto2 = (aeropuerto2["Latitude"], aeropuerto2["Longitude"])
+
+        coordenadas = [punto1, punto2]
+
+        p_lat = promedio_lat(coordenadas)
+        p_lng = promedio_lng(coordenadas)
+        
+        mapa = folium.Map(location=[p_lat,p_lng], zoom_start=6)
+
+        for e in coordenadas:
+            folium.Marker(location= [ float(e[0]) , float(e[1]) ] ,icon=folium.Icon(color='red',icon='info-sign')).add_to(mapa) 
+        mapa.save("mapa3.html")
+        webbrowser.open("mapa3.html")
+
     elif int(inputs[0]) == 5:
        y=input("ingrese su cantidad de millas")
        controller.millas(y,catalog)
@@ -176,6 +225,24 @@ while True:
         tamano = lt.size(lista)
         print("\n Hay "+str(tamano)+" aeropuertos afectados por el cierre del aeropuerto " + str(iata))
         lst = lt.newList("ARRAY_LIST")
+        
+        coordenadas = []
+
+        for ele in lt.iterator(lista):
+            lat = ele["Latitude"]
+            lng = ele["Longitude"]
+            tupla = (lat, lng)
+            coordenadas.append(tupla)
+        
+        p_lat = promedio_lat(coordenadas)
+        p_lng = promedio_lng(coordenadas)
+        
+        mapa = folium.Map(location=[p_lat,p_lng], zoom_start=6)
+
+        for e in coordenadas:
+            folium.Marker(location= [ float(e[0]) , float(e[1]) ] ,icon=folium.Icon(color='red',icon='info-sign')).add_to(mapa) 
+        mapa.save("mapa5.html")
+        webbrowser.open("mapa5.html")
         
         if int(tamano) >= 6:
             i = 1
