@@ -37,7 +37,7 @@ from DISClib.DataStructures import mapentry as me
 from DISClib.ADT import orderedmap as om
 from DISClib.Algorithms.Sorting import mergesort as mg
 from DISClib.Algorithms.Graphs import scc as scc
-from DISClib.Algorithms.Graphs import dijsktra as dj
+from DISClib.Algorithms.Graphs import dijsktra as dij
 from DISClib.Algorithms.Graphs import prim as pr
 import ast
 assert cf
@@ -197,18 +197,22 @@ def millas(nummillas, analyzer):
     arbol=pr.PrimMST(grafo)
     cont=0
     cont2=0
-    costo=0
     mayor=sk.newStack()
     for i in lt.iterator(mp.keySet(aero)):
         if pr.scan(grafo,arbol,i)<100000000:
             print(i)
-            costo=pr.scan(grafo,arbol,i)
-            if sk.size(mayor)< sk.size(path):
-                mayor=path
-                costo=contador
-            cont2+=contador
+            t=(sk.prim(grafo, arbol, i))
+            j=pr.edgesMST(grafo,t)
+            while not sk.empty(t):
+                edge=sk.pop(t)
+                costo=edge["weight"]
+                print(edge["vertexB"]+" : "+costo)
+            if sk.size(mayor)< sk.size(t):
+                mayor=t
+                co=costo
+            cont2+=costo
     res=float(nummillas)-cont2    
-    return(cont, cont2,costo, res)
+    return(cont, cont2,co, res)
             
 
 
