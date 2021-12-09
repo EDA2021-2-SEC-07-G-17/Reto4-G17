@@ -26,12 +26,17 @@
 
 
 import config as cf
+import math
 from DISClib.ADT import list as lt
 from DISClib.ADT import map as mp
 from DISClib.ADT import graph as gr
+from DISClib.ADT import stack as sk
+from DISClib.ADT import orderedmap as omp
 from DISClib.DataStructures import mapentry as me
 from DISClib.Algorithms.Sorting import mergesort as mg
 from DISClib.Algorithms.Graphs import scc as scc
+from DISClib.Algorithms.Graphs import dijsktra as dj
+import ast
 assert cf
 
 """
@@ -157,7 +162,100 @@ def clusteres_trafico(analyzer, iata1, iata2):
     conexion = scc.stronglyConnected(estructura, iata1, iata2)
 
     return total, conexion
+def camino_entre_ciudades(analyzer, c1,c2):
+    grafo = analyzer["grafo_dirigido"]
+    ciudades=analyzer["ciudades"]
+    name = c1
+    c1=mp.get(ciudades,c1)
+    lista = c1["value"]
+    if lt.size(lista)>1:
+        c1=input("ingrese las cordenadas de la ciudad "+name+" en formato latitud,longitud: ")
+        c1=c1.split(",")
+        for j in lt.iterator(lista):
+            if c1[0]==j["lat"] and c1[1]==j["lng"]:
+                ciudad1=j
+    else:
+        ciudad1=lt.getElement(lista,1)    
+    name=c2        
+    c2=mp.get(ciudades,c2)
+    lista2 = c2["value"]
+    if lt.size(lista2)>1:
+        c2=input("ingrese las cordenadas de la ciudad "+name+" en formato latitud,longitud: ")
+        c2=c2.split(",")
+        for j in lt.iterator(lista):
+            if c2[0]==j["lat"] and c2[1]==j["lng"]:
+                ciudad2=j
+    else:
+        ciudad2=lt.getElement(lista,1) 
+    encontro =False
+    conta=10
+    cont=0
+    cont2=0
+    lis=encontrar_aero(analyzer,ciudad1,conta)
+    lis2=encontrar_aero(analyzer,ciudad2,conta)
+    while encontro==False:    
+        if lt.size(lis)==0:
+            lis=encontrar_aero(analyzer,ciudad1,conta+10)
+        else:
+            cont=1
+            lis=mg.sort(lis,comparedis)
+        if lt.size(lis2)==0:
+            lis2=encontrar_aero(analyzer,ciudad2,conta+10)
+        else:
+            cont2=1  
+            lis2=mg.sort(lis2,comparedis)  
+        if cont+cont2==2:
+            encontro=True
+        conta+=10
+    print(lis,lis2)
 
+def encontrar_aero(analyzer,c,num):
+    aeropuertos=analyzer["aeropuertos"]  
+    lis= lt.newList(datastructure="SINGLE_LINKED")   
+    y=c["lat"]   
+    z=c["lng"]    
+    for i in lt.iterator (mp.valueSet(aeropuertos)):
+        x=i["Latitude"]
+        b=i["Longitude"]
+        print (x,y)
+        d_latt = ast.literal_eval(x)-ast.literal_eval(y)
+        d_long = ast.literal_eval(b)-ast.literal_eval(z)
+        a = math.sin (d_latt/2) ** 2 + math.cos (ast.literal_eval(y)) * math.cos (ast.literal_eval(x)) * math.sin (d_long / 2) ** 2
+        c = 2 * math.asin(math.sqrt (a))
+        total =6371*c
+        if total<num:
+           lt.addLast(lis,{"aero":i["IATA"],"total":total})
+    return lis  
+def millas(nummillas, analyzer):
+    aero=analyzer["aeropuertos"]
+    grafo=analyzer["grafo_dirigido"]
+    arbol=dj.Dijkstra(grafo,"KTF")
+    cont=0
+    cont2=0
+    costo=0
+    mayor=sk.newStack()
+    for i in lt.iterator(mp.keySet(aero)):
+        print(i)
+        if dj.hasPathTo(arbol,i):
+            print(100)
+            path=dj.pathTo(arbol,i)
+            contador=0
+            while not sk.isEmpty(path):
+                edge=sk.pop(path)
+                print(edge["vertexA"]+" : "+edge["weight"])
+                contador+=float(edge["weight"])
+                cont+=1
+            if sk.size(mayor)< sk.size(path):
+                mayor=path
+                costo=contador
+            cont2+=contador
+    res=float(nummillas)-cont2    
+    return(cont, cont2,costo, res)
+            
+
+
+            
+    
 # Funciones para creacion de datos
 
 # Funciones de consulta
@@ -176,6 +274,9 @@ def compareDegree(aer1, aer2):
     num1 = aer1["total"]
     num2 = aer2["total"]
     return num1 < num2
+def comparedis(dic1,dic2):
+    return dic1["total"] < dic2["total"]
+
 
 # Funciones de ordenamiento
 def orderDegree(lst):
