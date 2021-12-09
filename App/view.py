@@ -48,7 +48,7 @@ def printMenu():
 catalog = None
 airpfile = "airports-utf8-small.csv"
 routefile = "routes-utf8-small.csv"
-citiesfile = "worldcities.csv"
+citiesfile = "worldcities-utf8.csv"
 
 """
 Menu principal
@@ -165,7 +165,8 @@ while True:
         
 
     elif int(inputs[0]) == 5:
-        print("Requerimiento 4")
+       y=input("ingrese su cantidad de millas")
+       controller.millas(y,catalog)
 
     elif int(inputs[0]) == 6:
         print("\n----------------------Inputs----------------------")

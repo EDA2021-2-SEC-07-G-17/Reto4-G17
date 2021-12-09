@@ -31,6 +31,8 @@ from haversine import haversine
 from DISClib.ADT import list as lt
 from DISClib.ADT import map as mp
 from DISClib.ADT import graph as gr
+from DISClib.ADT import stack as sk
+from DISClib.ADT import orderedmap as omp
 from DISClib.DataStructures import mapentry as me
 from DISClib.ADT import orderedmap as om
 from DISClib.Algorithms.Sorting import mergesort as mg
@@ -187,6 +189,37 @@ def clusteres_trafico(analyzer, iata1, iata2):
 
     return total, conexion
 
+def millas(nummillas, analyzer):
+    aero=analyzer["aeropuertos"]
+    grafo=analyzer["grafo_dirigido"]
+    arbol=dij.Dijkstra(grafo,"KTF")
+    cont=0
+    cont2=0
+    costo=0
+    mayor=sk.newStack()
+    for i in lt.iterator(mp.keySet(aero)):
+        print(i)
+        if dij.hasPathTo(arbol,i):
+            print(100)
+            path=dij.pathTo(arbol,i)
+            contador=0
+            while not sk.isEmpty(path):
+                edge=sk.pop(path)
+                print(edge["vertexA"]+" : "+edge["weight"])
+                contador+=float(edge["weight"])
+                cont+=1
+            if sk.size(mayor)< sk.size(path):
+                mayor=path
+                costo=contador
+            cont2+=contador
+    res=float(nummillas)-cont2    
+    return(cont, cont2,costo, res)
+            
+
+
+            
+    
+
 def efecto_aeropuerto(analyzer, iata):
     grafo = analyzer["grafo_dirigido"]
     aeropuertos = analyzer["aeropuertos"]
@@ -257,6 +290,9 @@ def compareDegree(aer1, aer2):
     num1 = aer1["total"]
     num2 = aer2["total"]
     return num1 < num2
+def comparedis(dic1,dic2):
+    return dic1["total"] < dic2["total"]
+
 
 # Funciones de ordenamiento
 def orderDegree(lst):
