@@ -36,6 +36,7 @@ from DISClib.DataStructures import mapentry as me
 from DISClib.Algorithms.Sorting import mergesort as mg
 from DISClib.Algorithms.Graphs import scc as scc
 from DISClib.Algorithms.Graphs import dijsktra as dj
+from DISClib.Algorithms.Graphs import prim as pr
 import ast
 assert cf
 
@@ -230,22 +231,15 @@ def encontrar_aero(analyzer,c,num):
 def millas(nummillas, analyzer):
     aero=analyzer["aeropuertos"]
     grafo=analyzer["grafo_dirigido"]
-    arbol=dj.Dijkstra(grafo,"KTF")
+    arbol=pr.PrimMST(grafo)
     cont=0
     cont2=0
     costo=0
     mayor=sk.newStack()
     for i in lt.iterator(mp.keySet(aero)):
-        print(i)
-        if dj.hasPathTo(arbol,i):
-            print(100)
-            path=dj.pathTo(arbol,i)
-            contador=0
-            while not sk.isEmpty(path):
-                edge=sk.pop(path)
-                print(edge["vertexA"]+" : "+edge["weight"])
-                contador+=float(edge["weight"])
-                cont+=1
+        if pr.scan(grafo,arbol,i)<100000000:
+            print(i)
+            costo=pr.scan(grafo,arbol,i)
             if sk.size(mayor)< sk.size(path):
                 mayor=path
                 costo=contador
